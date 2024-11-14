@@ -2,6 +2,8 @@ import { Content } from 'pdfmake/interfaces';
 import { DateFormatter } from 'src/helpers';
 
 type HeaderProps = {
+  title?: string;
+  subtitle?: string;
   isShowLogo?: boolean;
   isShowDate?: boolean;
 };
@@ -15,21 +17,54 @@ const logo: Content = {
 };
 
 export const getHeaderSection = (options?: HeaderProps) => {
-  const { isShowLogo = true, isShowDate = true } = options || {};
+  const {
+    title = '',
+    subtitle = '',
+    isShowLogo = true,
+    isShowDate = true,
+  } = options || {};
 
   const date = DateFormatter.getDDMMMMYYYY(new Date());
 
   const header: Content = {
     columns: [
       isShowLogo ? logo : null,
+      title
+        ? {
+            stack: [
+              {
+                text: title,
+                alignment: 'center',
+                margin: [0, 15, 0, 0],
+                style: {
+                  fontSize: 22,
+                  bold: true,
+                },
+              },
+              subtitle
+                ? {
+                    text: subtitle,
+                    alignment: 'center',
+                    margin: [0, 2, 0, 0],
+                    style: {
+                      fontSize: 16,
+                      bold: true,
+                    },
+                  }
+                : null,
+            ],
+          }
+        : null,
       isShowDate
         ? {
-            text: `Fecha de Emisión: ${date}`,
+            text: date,
             alignment: 'right',
-            margin: [20, 20, 20, 20],
+            margin: [0, 20],
+            width: 150,
           }
         : null,
     ],
+    margin: [10, 10],
   };
 
   return header;
