@@ -1,11 +1,9 @@
 export class DateFormatter {
-  static formatter = new Intl.DateTimeFormat('es-PE', {
-    day: '2-digit',
-    month: 'long',
-    year: 'numeric',
-  });
-
   static getDDMMMMYYYY(date: Date): string {
-    return this.formatter.format(date);
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
+    }).format(date);
   }
 }

@@ -1,6 +1,20 @@
 import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { DateFormatter } from 'src/helpers';
+import { CurrencyFormatter } from '../helpers/currency-formatter';
+import { OrderDetailsType } from '../store-reports/types';
 
-export const generateOrderReport = (): TDocumentDefinitions => {
+export const generateOrderReport = (
+  order: OrderDetailsType,
+): TDocumentDefinitions => {
+  const { customers, order_details, order_id, order_date } = order;
+  const { customer_name, city, postal_code, address } = customers;
+
+  const total = order_details.reduce(
+    (acc, item) => acc + Number(item.products.price) * item.quantity,
+    0,
+  );
+  const shipping = 10;
+
   return {
     header: {
       margin: [40, 20, 40, 20],
@@ -36,13 +50,13 @@ export const generateOrderReport = (): TDocumentDefinitions => {
           {
             text: [
               {
-                text: 'Pedido N°: 000125\n',
+                text: `Pedido N°: ${order_id}\n`,
                 style: {
                   fontSize: 14,
                   bold: true,
                 },
               },
-              'Fecha: 2021-09-01\nEstado: Completado\nMétodo de Pago: Tarjeta de Crédito',
+              `Fecha: ${DateFormatter.getDDMMMMYYYY(new Date(order_date))}\nEstado: Completado\nMétodo de Pago: Tarjeta de Crédito`,
             ],
             alignment: 'right',
           },
@@ -60,7 +74,7 @@ export const generateOrderReport = (): TDocumentDefinitions => {
                   bold: true,
                 },
               },
-              'María Pérez Alarcón',
+              customer_name,
             ],
           },
           {
@@ -71,7 +85,7 @@ export const generateOrderReport = (): TDocumentDefinitions => {
                   bold: true,
                 },
               },
-              'Jr. Los Pinos 123, Lima, Perú',
+              `${address}, ${city}, ${postal_code}`,
             ],
             alignment: 'right',
           },
@@ -86,13 +100,26 @@ export const generateOrderReport = (): TDocumentDefinitions => {
           widths: ['auto', '*', 'auto', 'auto', 'auto'],
           body: [
             ['ID', 'Producto', 'Cantidad', 'Precio Unitario', 'Total'],
-            ['1', 'Amigurrumi de Llama', '1', '$30.00', '$30.00'],
-            ['2', 'Amigurrumi de Cristiano Ronaldo', '1', '$45.00', '$45.00'],
-            ['3', 'Amigurrumi de Cuy', '1', '$30.00', '$30.00'],
+            ...order_details.map((item) => [
+              item.products.product_id,
+              item.products.product_name,
+              item.quantity,
+              {
+                text: CurrencyFormatter.formatCurrency(
+                  Number(item.products.price),
+                ),
+                alignment: 'right',
+              },
+              {
+                text: CurrencyFormatter.formatCurrency(
+                  item.quantity * Number(item.products.price),
+                ),
+                alignment: 'right',
+              },
+            ]),
           ],
         },
       },
-
       // order summary
       {
         columns: [
@@ -104,10 +131,32 @@ export const generateOrderReport = (): TDocumentDefinitions => {
             table: {
               widths: ['*', 'auto'],
               body: [
-                [{ text: 'Subtotal:', bold: true }, '$75.00'],
-                [{ text: 'Envío:', bold: true }, '$5.00'],
-                [{ text: 'Descuento:', bold: true }, '$0.00'],
-                [{ text: 'Total:', bold: true }, '$80.00'],
+                [
+                  { text: 'Subtotal:', bold: true },
+                  {
+                    text: CurrencyFormatter.formatCurrency(total),
+                    alignment: 'right',
+                  },
+                ],
+                [
+                  { text: 'Envío:', bold: true },
+                  {
+                    text: CurrencyFormatter.formatCurrency(shipping),
+                    alignment: 'right',
+                  },
+                ],
+                [
+                  { text: 'Descuento:', bold: true },
+                  { text: 'S/ 0', alignment: 'right' },
+                ],
+                [
+                  { text: 'Total:', bold: true },
+                  {
+                    text: CurrencyFormatter.formatCurrency(total + shipping),
+                    alignment: 'right',
+                    bold: true,
+                  },
+                ],
               ],
             },
           },

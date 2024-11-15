@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { generateOrderReport } from 'src/reports';
 import { DatabaseService } from '../database/database.service';
 import { PrinterService } from '../printer/printer.service';
@@ -11,9 +11,27 @@ export class StoreReportsService {
   ) {}
 
   async orderReport(orderId: number) {
-    // const data = await this.prisma.orders.findMany();
+    const order: any = await this.prisma.orders.findUnique({
+      where: {
+        order_id: orderId,
+      },
+      include: {
+        customers: true,
+        order_details: {
+          include: {
+            products: true,
+          },
+        },
+      },
+    });
 
-    const documentDefinitions = generateOrderReport();
+    if (!order) {
+      throw new NotFoundException(
+        `Order with the given ID: ${orderId} not found`,
+      );
+    }
+
+    const documentDefinitions = generateOrderReport(order);
 
     return this.printerService.createPdf(documentDefinitions);
   }
