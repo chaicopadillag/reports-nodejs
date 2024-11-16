@@ -18,4 +18,30 @@ export class StoreReportsController {
     pdf.pipe(res);
     pdf.end();
   }
+
+  @Get('basic-svg')
+  async showSvg(@Res() res: Response) {
+    const pdf = await this.storeReportsService.basicSvg();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      'inline; filename="basic-svg-report.pdf"',
+    );
+    pdf.info.Title = `Basic SVG Report`;
+    pdf.pipe(res);
+    pdf.end();
+  }
+
+  @Get('stadistics')
+  async stadistics(@Res() res: Response) {
+    const pdf = await this.storeReportsService.stadistics();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      'inline; filename="stadistics-report.pdf"',
+    );
+    pdf.info.Title = `Stadistics Report`;
+    pdf.pipe(res);
+    pdf.end();
+  }
 }
