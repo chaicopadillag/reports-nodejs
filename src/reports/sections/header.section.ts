@@ -9,9 +9,9 @@ type HeaderProps = {
 };
 
 const logo: Content = {
-  image: 'assets/images/tucan-code-logo.png',
-  width: 100,
-  height: 100,
+  image: 'assets/images/crochefin.png',
+  width: 50,
+  height: 50,
   alignment: 'center',
   margin: [0, 0, 0, 20],
 };
@@ -35,9 +35,9 @@ export const getHeaderSection = (options?: HeaderProps) => {
               {
                 text: title,
                 alignment: 'center',
-                margin: [0, 15, 0, 0],
+                margin: [0, 10, 0, 0],
                 style: {
-                  fontSize: 22,
+                  fontSize: 14,
                   bold: true,
                 },
               },
@@ -47,8 +47,7 @@ export const getHeaderSection = (options?: HeaderProps) => {
                     alignment: 'center',
                     margin: [0, 2, 0, 0],
                     style: {
-                      fontSize: 16,
-                      bold: true,
+                      fontSize: 10,
                     },
                   }
                 : null,
@@ -59,12 +58,12 @@ export const getHeaderSection = (options?: HeaderProps) => {
         ? {
             text: date,
             alignment: 'right',
-            margin: [0, 20],
+            margin: [0, 10],
             width: 150,
           }
         : null,
     ],
-    margin: [10, 10],
+    margin: [20, 10, 20, 20],
   };
 
   return header;

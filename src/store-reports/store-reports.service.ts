@@ -4,8 +4,8 @@ import { ChartUtils } from '../helpers';
 import { PrinterService } from '../printer/printer.service';
 import {
   generateOrderReport,
-  getStadisticsReport,
   getSvgContent,
+  StadisticsReport,
 } from '../reports';
 
 @Injectable()
@@ -14,6 +14,7 @@ export class StoreReportsService {
     private readonly prisma: DatabaseService,
     private readonly printerService: PrinterService,
     private readonly chartUtil: ChartUtils,
+    private readonly stadisticReport: StadisticsReport,
   ) {}
 
   async orderReport(orderId: number) {
@@ -101,7 +102,7 @@ export class StoreReportsService {
   }
 
   async stadistics() {
-    const data = await this.prisma.customers.groupBy({
+    const topCountries = await this.prisma.customers.groupBy({
       by: ['country'],
       _count: {
         country: true,
@@ -111,9 +112,11 @@ export class StoreReportsService {
           country: 'desc',
         },
       },
+      take: 10,
     });
 
-    const documentDefinitions = getStadisticsReport(data);
+    const documentDefinitions =
+      await this.stadisticReport.getStadisticsReport(topCountries);
 
     return this.printerService.createPdf(documentDefinitions);
   }
