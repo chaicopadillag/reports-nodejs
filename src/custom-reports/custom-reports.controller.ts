@@ -18,4 +18,17 @@ export class CustomReportsController {
     pdf.pipe(res);
     pdf.end();
   }
+
+  @Get('cotizacion')
+  async getCotizacionReport(@Res() res: Response) {
+    const pdf = await this.customReportService.getCotizacionReport();
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader(
+      'Content-Disposition',
+      'inline; filename="cotizacion-report.pdf"',
+    );
+    pdf.info.Title = 'Cotizacion Report';
+    pdf.pipe(res);
+    pdf.end();
+  }
 }

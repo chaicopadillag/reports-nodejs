@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+import { custumTableLayouts } from '../printer/printer-tabla.layout';
 import { PrinterService } from '../printer/printer.service';
-import { HtmlReportService } from '../reports';
+import { getCotizacionReport, HtmlReportService } from '../reports';
 
 @Injectable()
 export class CustomReportsService {
@@ -12,5 +13,12 @@ export class CustomReportsService {
   async getCustomHtmlReport() {
     const docDefinition = await this.htmlReportService.getHtmlReport();
     return this.printer.createPdf(docDefinition);
+  }
+
+  async getCotizacionReport() {
+    const docDefinition = await getCotizacionReport();
+    return this.printer.createPdf(docDefinition, {
+      tableLayouts: custumTableLayouts,
+    });
   }
 }
